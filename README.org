@@ -1,0 +1,22 @@
+				README
+
+* Parallel CPS
+  
+  This is our implementation of the basic idea sketched out in this paper - 
+
+  C. Angerer, Th. Gross
+  Parallel Continuation Passing Style: A Compiler Representation for Incremental Parallelization
+  The 3nd Workshop on Parallel Execution of Sequential Programs on Multi-core Architectures (PESPMA 2010), co-located with 37th Intl. Symposium on Computer Architecture (ISCA), Saint-Malo, France, June 2010 (bib) 
+
+  For more details - go to http://people.inf.ethz.ch/angererc/
+
+* Script to run everything
+  ./run-everything.bash
+* To compile 
+  ant compile
+
+  We are using Ant build.xml instead of a Makefile
+* To execute src/pcpsexamples/Main.java
+  ant execute
+* To run the unit tests
+  ant test

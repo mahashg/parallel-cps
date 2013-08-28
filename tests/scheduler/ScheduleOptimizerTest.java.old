@@ -1,0 +1,290 @@
+// package scheduler;
+
+// import org.jgrapht.graph.DefaultEdge;
+// import org.jgrapht.graph.ListenableDirectedGraph;
+// import org.junit.Before;
+// import org.junit.Ignore;
+// import org.junit.Test;
+
+// import java.util.*;
+// import org.jgrapht.graph.DefaultEdge;
+// import org.jgrapht.DirectedGraph;
+// import org.jgrapht.graph.ListenableDirectedGraph;
+// import org.jgrapht.alg.TransitiveClosure;
+
+// import static org.junit.Assert.assertEquals;
+// import static org.junit.Assert.assertFalse;
+// import static org.junit.Assert.assertTrue;
+
+// public class ScheduleOptimizerTest{
+//     ListenableDirectedGraph<Activation, DefaultEdge> taskGraph;
+//     ListenableDirectedGraph<Activation, DefaultEdge> expectedGraph;
+//     ListenableDirectedGraph<Activation, DefaultEdge> optimizedGraph;
+//     ScheduleOptimizer graph_expt;
+//     ScheduleOptimizer optimizer;
+
+//     public Scheduler scheduler = new Scheduler();
+
+//     @Before
+//     public void setup(){
+//         taskGraph = new ListenableDirectedGraph<Activation, DefaultEdge>(DefaultEdge.class);
+//         expectedGraph = new ListenableDirectedGraph<Activation, DefaultEdge>(DefaultEdge.class);
+
+//         optimizer = new ScheduleOptimizer();
+//         graph_expt = new ScheduleOptimizer();
+//     }
+
+//     @Test
+//     public void testForSimpleGraph(){
+//         System.out.println("testForSimpleGraph:");
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addEdge(act1, act2);
+
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addEdge(act1, act2);
+
+//         optimizedGraph = graph_expt.makeEfficientGraph_using_partial_order_set(taskGraph);
+
+//         assertEquals(optimizedGraph.toString(), expectedGraph.toString());
+
+//     }
+
+//     @Test
+//     public void testForLoop(){
+//         System.out.println("testForLoop:");
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addEdge(act1, act2);
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addEdge(act1, act2);
+
+//         // cycle
+//         taskGraph.addEdge(act1, act1);
+//         taskGraph.addEdge(act2, act2);
+
+//         optimizedGraph = graph_expt.makeEfficientGraph_using_partial_order_set(taskGraph);
+
+//         System.out.println("expectedGraph: " + expectedGraph);
+//         System.out.println("optimizedGraph: " + optimizedGraph);
+//         assertEquals(optimizedGraph.toString(), expectedGraph.toString());
+//     }
+
+//     @Test
+//     public void testForSymmetric(){
+//         System.out.println("testForSymmetric:");
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addEdge(act1, act2);
+//         taskGraph.addEdge(act2, act1);
+
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addEdge(act1, act2);
+
+//         optimizedGraph = graph_expt.makeEfficientGraph_using_partial_order_set(taskGraph);
+//         System.out.println("expectedGraph: " + expectedGraph);
+//         System.out.println("optimizedGraph: " + optimizedGraph);
+//         assertEquals(optimizedGraph.toString(), expectedGraph.toString());
+//     }
+
+//     @Test
+//     public void testForTransitive(){
+//         System.out.println("testForTransitive:");
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+//         Activation act3 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addVertex(act3);
+//         taskGraph.addEdge(act1, act2);
+//         taskGraph.addEdge(act2, act3);
+//         taskGraph.addEdge(act1, act3);
+
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addVertex(act3);
+//         expectedGraph.addEdge(act1, act2);
+//         expectedGraph.addEdge(act2, act3);
+
+//         optimizedGraph = graph_expt.makeEfficientGraph_using_partial_order_set(taskGraph);
+//         System.out.println("optimizedGraph: " + optimizedGraph);
+//         System.out.println("expectedGraph: " + expectedGraph);
+
+//         assertEquals(optimizedGraph.toString(), expectedGraph.toString());
+//     }
+
+//     @Test
+//     public void testTransitiveEdgeDist3(){
+//         System.out.println("testTransitiveEdgeDist3:");
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+//         Activation act3 = new Activation(scheduler);
+//         Activation act4 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addVertex(act3);
+//         taskGraph.addVertex(act4);
+//         taskGraph.addEdge(act1, act2);
+//         taskGraph.addEdge(act2, act3);
+//         taskGraph.addEdge(act3, act4);
+//         taskGraph.addEdge(act1, act4);
+
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addVertex(act3);
+//         expectedGraph.addVertex(act4);
+//         expectedGraph.addEdge(act1, act2);
+//         expectedGraph.addEdge(act2, act3);
+//         expectedGraph.addEdge(act3, act4);
+
+//         optimizedGraph = graph_expt.makeEfficientGraph_using_partial_order_set(taskGraph);
+//         System.out.println("optimizedGraph: " + optimizedGraph);
+//         System.out.println("expectedGraph: " + expectedGraph);
+
+//         assertEquals(optimizedGraph.toString(), expectedGraph.toString());
+//     }
+
+//     @Test
+//     public final void testFib(){
+//         System.out.println("testFib:");
+//         Activation now = new Activation(scheduler);
+//         Activation later = new Activation(scheduler);
+//         Activation left = new Activation(scheduler);
+//         Activation right = new Activation(scheduler);
+//         Activation sum = new Activation(scheduler);
+
+//         taskGraph.addVertex(now);
+//         taskGraph.addVertex(later);
+//         taskGraph.addVertex(left);
+//         taskGraph.addVertex(right);
+//         taskGraph.addVertex(sum);
+
+//         taskGraph.addEdge(now, later);
+//         taskGraph.addEdge(now, left);
+//         taskGraph.addEdge(now, right);
+//         taskGraph.addEdge(now, sum);
+//         taskGraph.addEdge(left, right);
+//         taskGraph.addEdge(right, sum);
+//         taskGraph.addEdge(sum, later);
+
+//         expectedGraph.addVertex(now);
+//         expectedGraph.addVertex(later);
+//         expectedGraph.addVertex(left);
+//         expectedGraph.addVertex(right);
+//         expectedGraph.addVertex(sum);
+
+//         expectedGraph.addEdge(now, left);
+//         // TODO: Later make this left -> sum
+//         expectedGraph.addEdge(left, right);
+//         expectedGraph.addEdge(right, sum);
+//         expectedGraph.addEdge(sum, later);
+
+//         optimizedGraph = graph_expt.makeEfficientGraph_using_partial_order_set(taskGraph);
+//         System.out.println("optimizedGraph: " + optimizedGraph);
+//         System.out.println("expectedGraph: " + expectedGraph);
+
+//         assertEquals(optimizedGraph.toString(), expectedGraph.toString());
+//     }
+
+//     /**
+//      * Test method for {@link ScheduleOptimizer#getClone()}.
+//      */
+//     @Test
+//     public final void testGetClone(){
+//         System.out.println("testGetClone:");
+
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+//         Activation act3 = new Activation(scheduler);
+//         Activation act4 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addVertex(act3);
+//         taskGraph.addVertex(act4);
+//         taskGraph.addEdge(act1, act2);
+//         taskGraph.addEdge(act2, act3);
+//         taskGraph.addEdge(act1, act3);
+//         taskGraph.addEdge(act3, act4);
+
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addVertex(act3);
+//         expectedGraph.addVertex(act4);
+//         expectedGraph.addEdge(act1, act2);
+//         expectedGraph.addEdge(act2, act3);
+//         taskGraph.addEdge(act3, act4);
+
+//         String initialGraphString = taskGraph.toString();
+
+//         DirectedGraph<Activation, DefaultEdge> clonedGraph =
+//                 optimizer.getClone(taskGraph);
+
+//         String finalTaskGraphString = taskGraph.toString();
+
+//         assertEquals(initialGraphString, clonedGraph.toString());
+
+//         // Change the cloned graph
+//         clonedGraph.removeVertex(act1);
+//         clonedGraph.removeVertex(act2);
+//         clonedGraph.removeVertex(act3);
+//         clonedGraph.removeVertex(act4);
+        
+//         assertEquals(initialGraphString, finalTaskGraphString);
+//     }
+
+//     /**
+//      * Test method for {@link ScheduleOptimizer#removeTransitiveEdges()}.
+//      */
+//     // @Ignore
+//     @Test
+//     public final void testRemoveTransitiveEdges(){
+//         System.out.println("testRemoveTransitiveEdges:");
+
+//         Activation act1 = new Activation(scheduler);
+//         Activation act2 = new Activation(scheduler);
+//         Activation act3 = new Activation(scheduler);
+//         Activation act4 = new Activation(scheduler);
+
+//         taskGraph.addVertex(act1);
+//         taskGraph.addVertex(act2);
+//         taskGraph.addVertex(act3);
+//         taskGraph.addVertex(act4);
+//         taskGraph.addEdge(act1, act2);
+//         taskGraph.addEdge(act2, act3);
+//         taskGraph.addEdge(act1, act3);
+//         taskGraph.addEdge(act3, act4);
+
+//         expectedGraph.addVertex(act1);
+//         expectedGraph.addVertex(act2);
+//         expectedGraph.addVertex(act3);
+//         expectedGraph.addVertex(act4);
+//         expectedGraph.addEdge(act1, act2);
+//         expectedGraph.addEdge(act2, act3);
+//         taskGraph.addEdge(act3, act4);
+
+//         System.out.println("taskGraph: " + taskGraph);
+//         String initialTaskGraph = taskGraph.toString();
+
+//         optimizer.removeTransitiveEdges(taskGraph);
+
+//         System.out.println("taskGraph: " + taskGraph);
+//         String finalTaskGraph = taskGraph.toString();
+
+//         assertEquals(initialTaskGraph, finalTaskGraph);
+//     }
+// }
